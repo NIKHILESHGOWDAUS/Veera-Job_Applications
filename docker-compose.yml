@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:13
+    container_name: job-app-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: job_applications
+    volumes:
+      - job_app_pg_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5801:5432"
+
+  backend:
+    build: ./Backend
+    container_name: job-app-backend
+    depends_on:
+      - postgres
+    ports:
+      - "3801:3801"
+    restart: unless-stopped
+
+  frontend:
+    build: ./Frontend
+    container_name: job-app-frontend
+    ports:
+      - "8919:80"
+    restart: unless-stopped
+
+  hr:
+    build: ./HR
+    container_name: job-app-hr
+    ports:
+      - "8920:80"
+    restart: unless-stopped
+
+  view_offer:
+    build: ./View_offer
+    container_name: job-app-view-offer
+    ports:
+      - "8921:80"
+    restart: unless-stopped
+
+volumes:
+  job_app_pg_data:
+ 
+
